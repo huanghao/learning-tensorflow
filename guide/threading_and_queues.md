@@ -65,7 +65,6 @@ qr.create_threads(sess, coord=coord, start=True)
 QueueRunner接受两个东西，1是queue本身，2是一些enqueue操作。最后每个操作都会被运行在一个单独的线程里
 
 
-
 # Handling exceptions
 
 那些被queue runners启动的线程除了做进队列操作以外，还做一些别的事情。他们可以捕获和处理queue产生的异常，包括tf.errors.OutOfRangeError（表示queue已经被关闭了）
