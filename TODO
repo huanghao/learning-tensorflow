@@ -1,0 +1,6 @@
+- Python API Guide, ignore contrib at first
+- Decaying the learning rate
+- Moving Averages
+- tf.train.SessionRunHook
+- tf.train.MonitoredTrainingSession
+- tf.control_dependencies
