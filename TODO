@@ -1,3 +1,7 @@
+Theory is when you know everthing but nothing works.
+Practice is when everything works but no one knows why.
+In our lab,theory and practice are  combined:nothing works and no one knows why.
+
 - Decaying the learning rate
 - Moving Averages
 - tf.train.SessionRunHook
@@ -6,3 +10,4 @@
 - https://www.tensorflow.org/api_guides/python/image
 - https://www.tensorflow.org/deploy/distributed
 - tf on docker/mesos/k8s: https://www.tensorflow.org/deploy/distributed
+- cuda, gpu
