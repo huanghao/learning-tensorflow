@@ -4,18 +4,19 @@ import tensorflow as tf
 import numpy as np
 
 def read_inputs():
-    filename_queue = tf.train.string_input_producer(glob.glob('cap2/*.png'))
+    filename_queue = tf.train.string_input_producer(glob.glob('data/*.png'))
     reader = tf.WholeFileReader()
     key, val = reader.read(filename_queue)
     image = tf.reshape(
                 tf.image.rgb_to_grayscale(
                     tf.image.decode_png(val)),
-                [28, 80])
+                [28, 80, 1])
     inputs = tf.train.shuffle_batch([image, key], batch_size=2, capacity=100, min_after_dequeue=30)
-    return inputs
+    image_summary = tf.summary.image('image', inputs[0])
+    return inputs, image_summary
 
 
-inputs = read_inputs()
+inputs, image_summary = read_inputs()
 
 writer = tf.summary.FileWriter('log')
 
@@ -29,6 +30,7 @@ with tf.Session() as sess:
             image, label = sess.run(inputs)
             print image.shape, label.shape
             print label
+            writer.add_summary(sess.run(image_summary))
     except tf.errors.OutOfRangeError:
         pass
     finally:

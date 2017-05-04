@@ -1,15 +1,20 @@
+import sys
 import random
 
-import cv2
-import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 
+if len(sys.argv) > 2:
+    n = int(sys.argv)
+else:
+    n = 1
+n = max(n, 1)
+    
 size = (80, 28)
 chars = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789"
 font = ImageFont.truetype('/Library/Fonts/Arial Black.ttf', 24)
 
-for _ in xrange(1000):
+for _ in xrange(n):
     text = ''.join(random.sample(chars, 4))
 
     im = Image.new('RGB', size, (0,0,0))
