@@ -4,8 +4,11 @@ import tensorflow as tf
 import numpy as np
 
 
+from inference import train
+
+
 def read_inputs():
-    filename_queue = tf.train.string_input_producer(['train_data'])
+    filename_queue = tf.train.string_input_producer(['data/train_data'])
 
     height, width = 28, 80
     label_bytes = 34 * 4
@@ -19,12 +22,10 @@ def read_inputs():
     label = tf.reshape(
         tf.strided_slice(record_bytes, [0], [label_bytes]),
         [label_bytes, 1])
-    print label
 
     image = tf.reshape(
         tf.strided_slice(record_bytes, [label_bytes], [label_bytes + image_bytes]),
         [height, width, 1])
-    print image
     """
     image = tf.image.rgb_to_grayscale(image)
     height, width = 26, 78
@@ -35,7 +36,8 @@ def read_inputs():
     image.set_shape([height, width, 1])
     """
 
-    inputs = tf.train.shuffle_batch([image, label], batch_size=1, capacity=100, min_after_dequeue=30)
+    sz = 1
+    inputs = tf.train.shuffle_batch([image, label], batch_size=sz, capacity=sz*10, min_after_dequeue=sz*3)
     image_summary = tf.summary.image('image', inputs[0])
     return inputs, image_summary
 
@@ -50,7 +52,7 @@ with tf.Session() as sess:
     print len(threads), 'threads started'
     try:
         #while not coord.should_stop():
-        for i in range(1):
+        for i in xrange(1000):
             image, label = sess.run(inputs)
             print image.shape, label.shape
             print label
