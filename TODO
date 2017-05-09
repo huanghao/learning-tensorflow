@@ -11,4 +11,13 @@ In our lab,theory and practice are  combined:nothing works and no one knows why.
 - https://www.tensorflow.org/deploy/distributed
 - tf on docker/mesos/k8s: https://www.tensorflow.org/deploy/distributed
 - cuda, gpu
+- scaffold
+- global_step = tf.contrib.framework.get_or_create_global_step()
+
+
+CONV
+
 - 1x1 conv, googleNet paper
+- normalization layer/local response normalization/batch normalization
+- slice layer
+- merge layer/google inception module/google lenet/concatenation/resnet(+/-/*/max/conv)
