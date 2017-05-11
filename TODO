@@ -21,3 +21,7 @@ CONV
 - normalization layer/local response normalization/batch normalization
 - slice layer
 - merge layer/google inception module/google lenet/concatenation/resnet(+/-/*/max/conv)
+- vgg
+- resnet
+- u-net
+- fcn, input size?
