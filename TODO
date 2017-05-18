@@ -25,3 +25,4 @@ CONV
 - resnet
 - u-net
 - fcn, input size?
+- pascal voc/coco
