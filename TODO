@@ -26,3 +26,11 @@ CONV
 - u-net
 - fcn, input size?
 - pascal voc/coco
+
+AlexNet -> VGG -> GooLeNet -> ResNet -> ResNeXt
+R-CNN -> SPP-Net -> Fast/Faster R-CNN
+YOLO -> SSD -> R-FCN
+FCN -> SegNet/DeconvNet -> DeepLab
+Vanilla RNN -> LSTM -> GRU
+GAN -> DCGAN -> wGAN
+SRGAN, SalGAN, RLA
