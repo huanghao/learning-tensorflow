@@ -15,8 +15,6 @@ In our lab, theory and practice are combined: nothing works and no one knows why
 CONV
 
 - slice layer
-- merge layer/google inception module/google lenet/concatenation/resnet(+/-/*/max/conv)
-- resnet
 - u-net
 - pascal voc/coco
 - deconvnet
@@ -31,7 +29,6 @@ SRGAN, SalGAN, RLA
 
 1）Generative Adversarial Networks；2）Conditional Generative Adversarial Nets；3）Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks。
 
-- S. Ioffe and C. Szegedy. Batch normalization: Accelerating deep
 network training by reducing internal covariate shift. In ICML, 2015.
 - M.D.ZeilerandR.Fergus.Visualizingandunderstandingconvolu- tional neural networks. In ECCV, 2014.
 - P.Sermanet,D.Eigen,X.Zhang,M.Mathieu,R.Fergus,andY.Le- Cun. Overfeat: Integrated recognition, localization and detection using convolutional networks. In ICLR, 2014.
@@ -51,8 +48,10 @@ deep feedforward neural networks. In AISTATS, 2010.
 - [13] K. He, X. Zhang, S. Ren, and J. Sun. Delving deep into rectifiers: Surpassing human-level performance on imagenet classification. In
 ICCV, 2015.
 
-[22] Y. LeCun, B. Boser, J. S. Denker, D. Henderson, R. E. Howard, W. Hubbard, and L. D. Jackel. Backpropagation applied to hand-
-written zip code recognition. Neural computation, 1989.
+weight initialize
+[13] K. He, X. Zhang, S. Ren, and J. Sun. Delving deep into rectifiers: Surpassing human-level performance on imagenet classification. In
+ICCV, 2015.
 
-[42] R. K. Srivastava, K. Greff, and J. Schmidhuber. Highway networks. arXiv:1505.00387, 2015.
-[43] R. K. Srivastava, K. Greff, and J. Schmidhuber. Training very deep networks. 1507.06228, 2015.
+data argument
+[24] C.-Y. Lee, S. Xie, P. Gallagher, Z. Zhang, and Z. Tu. Deeply-
+supervised nets. arXiv:1409.5185, 2014.
