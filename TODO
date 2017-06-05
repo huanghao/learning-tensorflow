@@ -39,7 +39,6 @@ deep feedforward neural networks. In AISTATS, 2010.
 - [1] Y.Bengio,P.Simard,andP.Frasconi.Learninglong-termdependen- cies with gradient descent is difficult. IEEE Transactions on Neural Networks, 5(2):157–166, 1994.
 
 This problem, however, has been largely addressed by normalized initialization [23, 9, 37, 13] and intermediate normalization layers [16],
-- [16] S. Ioffe and C. Szegedy. Batch normalization: Accelerating deep
 network training by reducing internal covariate shift. In ICML, 2015.
 - [23] Y.LeCun,L.Bottou,G.B.Orr,andK.-R.Mu ̈ller.Efficientbackprop. In Neural Networks: Tricks of the Trade, pages 9–50. Springer, 1998.
 - [9] X. Glorot and Y. Bengio. Understanding the difficulty of training
@@ -55,3 +54,13 @@ ICCV, 2015.
 data argument
 [24] C.-Y. Lee, S. Xie, P. Gallagher, Z. Zhang, and Z. Tu. Deeply-
 supervised nets. arXiv:1409.5185, 2014.
+
+
+- [16] S. Ioffe and C. Szegedy. Batch normalization: Accelerating deep
+https://r2rt.com/implementing-batch-normalization-in-tensorflow.html
+http://ruishu.io/2016/12/27/batchnorm/
+Boltzmann machine 
+
+生成评论：rnn，gan
+生成验证码
+识别验证码
