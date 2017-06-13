@@ -3,12 +3,15 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 from datetime import datetime
+from scipy.misc import imresize
+
 from gen_captcha import gen_captcha_text_and_image
 from gen_captcha import number
 from gen_captcha import alphabet
 from gen_captcha import ALPHABET
 
 import numpy as np
+from PIL import Image
 import tensorflow as tf
 
 text, image = gen_captcha_text_and_image()
@@ -169,12 +172,24 @@ def pprint(step, loss=None, accuracy=None):
         format_str += 'accuracy = %.2f'
         print (format_str % (datetime.now(), step, accuracy))
 
+def compute_loss(output):
+    losses = []
+    for i in range(MAX_CAPTCHA):
+        i = i * CHAR_SET_LEN
+        a = tf.slice(output, [0, i], [-1, CHAR_SET_LEN])
+        b = tf.slice(Y, [0, i], [-1, CHAR_SET_LEN])
+        l = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=a, labels=b))
+        losses.append(l)
+    
+    return tf.add_n(losses)
+
 # 训练
 def train_crack_captcha_cnn():
     output = crack_captcha_cnn()
     # loss
     #loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, Y))
-    loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, labels=Y))
+    #loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, labels=Y))
+    loss = compute_loss(output)
         # 最后一层用来分类的softmax和sigmoid有什么不同？
     # optimizer 为了加快训练 learning_rate应该开始大，然后慢慢衰
     tf.summary.scalar("loss", loss)
@@ -199,8 +214,9 @@ def train_crack_captcha_cnn():
         while True:
             batch_x, batch_y = get_next_batch(64)
             merged_op, _, loss_ = sess.run([merged, optimizer, loss], feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
-            pprint(step, loss=loss_)
-            writer.add_summary(merged_op, step)
+            if step % 10 == 0:
+                pprint(step, loss=loss_)
+                writer.add_summary(merged_op, step)
             # 每100 step计算一次准确率
             if step % 100 == 0:
                 batch_x_test, batch_y_test = get_next_batch(100)
@@ -209,17 +225,19 @@ def train_crack_captcha_cnn():
                 pprint(step, accuracy=acc)
                 # 如果准确率大于50%,保存模型,完成训练
                 if acc > 0.98:
-                    saver.save(sess, "crack_capcha.model", global_step=step)
-                    break
+                    saver.save(sess, "ckpoints/crack_capcha_break.model", global_step=step)
+            # 每1w步保存一次系数
+            if step % 10000 == 0 and step:
+                saver.save(sess, "ckpoints/crack_capcha.model", global_step=step)                
 
             step += 1
 
-def crack_captcha(captcha_image):
+def crack_captcha_single(captcha_image):
     output = crack_captcha_cnn()
 
     saver = tf.train.Saver()
     with tf.Session() as sess:
-        saver.restore(sess, tf.train.latest_checkpoint('.'))
+        saver.restore(sess, tf.train.latest_checkpoint('./ckpoints/'))
 
         predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
         text_list = sess.run(predict, feed_dict={X: [captcha_image], keep_prob: 1})
@@ -232,12 +250,58 @@ def crack_captcha(captcha_image):
             i += 1
 
         return vec2text(vector)
+    
+def crack_captcha(files=[]):
+    output = crack_captcha_cnn()
+    saver = tf.train.Saver()
+    with tf.Session() as sess:
+        saver.restore(sess, tf.train.latest_checkpoint('./ckpoints/'))
+        predict = tf.argmax(tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN]), 2)
+        if not files:
+            for i in range(100):
+                text1, image = gen_captcha_text_and_image()
+                if image.shape != (60, 160, 3):
+                    print("error image size:", image.shape)
+                    continue
+
+                image = convert2gray(image)
+                image = image.flatten() / 255
+
+                text_list = sess.run(predict, feed_dict={X: [image], keep_prob: 1})
+                text = text_list[0].tolist()
+                vector = np.zeros(MAX_CAPTCHA*CHAR_SET_LEN)
+                i = 0
+                for n in text:
+                    vector[i*CHAR_SET_LEN + n] = 1
+                    i += 1
+
+                print("正确: {}  预测: {} {}".format(text1, vec2text(vector), text1 == vec2text(vector)))
+
+        else:
+            for i in files:
+                im = np.array(Image.open(i))
+                im = imresize(im, (60,160))
+
+                im = convert2gray(im)
+                im = im.flatten() / 255
+
+
+                text_list = sess.run(predict, feed_dict={X: [im], keep_prob: 1})
+                text = text_list[0].tolist()
+                vector = np.zeros(MAX_CAPTCHA*CHAR_SET_LEN)
+                j = 0
+                for n in text:
+                    vector[j*CHAR_SET_LEN + n] = 1
+                    j += 1
+
+                print("filename: {}  predict: {}".format(i.split("/")[-1].split(".")[0], vec2text(vector)))
+
 
 if __name__ == '__main__':
-    text, image = gen_captcha_text_and_image()
-    image = convert2gray(image)
-    image = image.flatten() / 255
-    predict_text = crack_captcha(image)
-    print("正确: {}  预测: {}".format(text, predict_text))
-    # train_crack_captcha_cnn()
-
+    train_crack_captcha_cnn()
+    # text, image = gen_captcha_text_and_image()
+    # image = convert2gray(image)
+    #image = image.flatten() / 255
+    #predict_text = crack_captcha(image)
+    # print("正确: {}  预测: {}".format(text, predict_text))
+    # crack_captcha()
