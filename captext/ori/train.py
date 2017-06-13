@@ -1,29 +1,25 @@
-#coding:utf-8
+# coding:utf-8
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import string
+import numpy as np
+from PIL import Image
+import tensorflow as tf
 
 from datetime import datetime
 from scipy.misc import imresize
 
 from gen_captcha import gen_captcha_text_and_image
-from gen_captcha import number
-from gen_captcha import alphabet
-from gen_captcha import ALPHABET
-
-import numpy as np
-from PIL import Image
-import tensorflow as tf
 
 text, image = gen_captcha_text_and_image()
-# print("验证码图像channel:", image.shape)  # (60, 160, 3)
-# 图像大小
 IMAGE_HEIGHT = 60
 IMAGE_WIDTH = 160
 MAX_CAPTCHA = len(text)
-# print("验证码文本最长字符数", MAX_CAPTCHA)   # 验证码最长4字符; 我全部固定为4,可以不固定. 如果验证码长度小于4，用'_'补齐
 
-# 把彩色图像转为灰度图像（色彩对识别验证码没有什么用）
+
 def convert2gray(img):
+    """把彩色图像转为灰度图像（色彩对识别验证码没有什么用）"""
     if len(img.shape) > 2:
         gray = np.mean(img, -1)
         # 上面的转法较快，正规转法如下
@@ -39,7 +35,7 @@ np.pad(image【,((2,3),(2,2)), 'constant', constant_values=(255,))  # 在图像�
 """
 
 # 文本转向量
-char_set = number + alphabet + ALPHABET + ['_']  # 如果验证码长度小于4, '_'用来补齐
+char_set = string.digits + string.ascii_letters + ['_']  # 如果验证码长度小于4, '_'用来补齐
 CHAR_SET_LEN = len(char_set)
 def text2vec(text):
     text_len = len(text)
@@ -63,6 +59,7 @@ def text2vec(text):
         idx = i * CHAR_SET_LEN + char2pos(c)
         vector[idx] = 1
     return vector
+
 # 向量转回文本
 def vec2text(vec):
     char_pos = vec.nonzero()[0]
@@ -180,7 +177,7 @@ def compute_loss(output):
         b = tf.slice(Y, [0, i], [-1, CHAR_SET_LEN])
         l = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=a, labels=b))
         losses.append(l)
-    
+
     return tf.add_n(losses)
 
 # 训练
@@ -228,7 +225,7 @@ def train_crack_captcha_cnn():
                     saver.save(sess, "ckpoints/crack_capcha_break.model", global_step=step)
             # 每1w步保存一次系数
             if step % 10000 == 0 and step:
-                saver.save(sess, "ckpoints/crack_capcha.model", global_step=step)                
+                saver.save(sess, "ckpoints/crack_capcha.model", global_step=step)
 
             step += 1
 
@@ -250,7 +247,7 @@ def crack_captcha_single(captcha_image):
             i += 1
 
         return vec2text(vector)
-    
+
 def crack_captcha(files=[]):
     output = crack_captcha_cnn()
     saver = tf.train.Saver()
@@ -285,7 +282,6 @@ def crack_captcha(files=[]):
                 im = convert2gray(im)
                 im = im.flatten() / 255
 
-
                 text_list = sess.run(predict, feed_dict={X: [im], keep_prob: 1})
                 text = text_list[0].tolist()
                 vector = np.zeros(MAX_CAPTCHA*CHAR_SET_LEN)
@@ -301,7 +297,7 @@ if __name__ == '__main__':
     train_crack_captcha_cnn()
     # text, image = gen_captcha_text_and_image()
     # image = convert2gray(image)
-    #image = image.flatten() / 255
-    #predict_text = crack_captcha(image)
+    # image = image.flatten() / 255
+    # predict_text = crack_captcha(image)
     # print("正确: {}  预测: {}".format(text, predict_text))
     # crack_captcha()
