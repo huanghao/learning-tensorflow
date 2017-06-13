@@ -33,7 +33,7 @@ if __name__ == "__main__":
         im = np.array(Image.open(cap))
         print(">>>", im.shape)
         from scipy.misc import imresize
-        im = imresize(im, (60,160))
+        im = imresize(im, (60, 160))
         print(">>>", im.shape)
         # im.save(text+"_.jpg", "JPEG")
         im = convert2gray(im)
