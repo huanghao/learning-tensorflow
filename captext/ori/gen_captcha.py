@@ -7,7 +7,7 @@ import random
 from PIL import Image
 import matplotlib.pyplot as plt
 
-from tbgenerater import ImageCaptcha  # pip install captcha
+from captcha.image import ImageCaptcha  # pip install captcha
 
 
 def random_captcha_text(captcha_size=4):

@@ -35,7 +35,7 @@ np.pad(image【,((2,3),(2,2)), 'constant', constant_values=(255,))  # 在图像�
 """
 
 # 文本转向量
-char_set = string.digits + string.ascii_letters + ['_']  # 如果验证码长度小于4, '_'用来补齐
+char_set = string.digits + string.ascii_letters + '_'  # 如果验证码长度小于4, '_'用来补齐
 CHAR_SET_LEN = len(char_set)
 def text2vec(text):
     text_len = len(text)
