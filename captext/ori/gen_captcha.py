@@ -8,7 +8,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 # from captcha.image import ImageCaptcha  # pip install captcha
-from capgen import ImageCaptcha
+from tbcap import ImageCaptcha
 
 
 def random_captcha_text(captcha_size=4):
