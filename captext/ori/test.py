@@ -41,7 +41,7 @@ def crack_captcha(files=[]):
         if not files:
             for i in range(100):
                 text1, image = gen_captcha_text_and_image()
-                if image.shape != (IMAGE_WIDTH, IMAGE_HEIGHT, 3):
+                if image.shape != (IMAGE_HEIGHT, IMAGE_WIDTH, 3):
                     print("error image size:", image.shape)
                     continue
 
