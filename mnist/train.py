@@ -29,6 +29,8 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 import tensorflow as tf
 
+import inputs
+
 FLAGS = None
 
 
@@ -53,13 +55,13 @@ def max_pool_2x2(x):
 
 def main(_):
     # Import data
-    mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
+    # mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
     x = tf.placeholder(tf.float32, [None, 784])
+    x_image = tf.reshape(x, [-1, 28, 28, 1])
     y_ = tf.placeholder(tf.float32, [None, 10])
 
     # conv1 & maxpool1
-    x_image = tf.reshape(x, [-1, 28, 28, 1])
     W_conv1 = weight_variable([5, 5, 1, 32])
     b_conv1 = bias_variable([32])
     h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
@@ -95,19 +97,23 @@ def main(_):
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    sess = tf.InteractiveSession()
-    tf.global_variables_initializer().run()
+    images, labels = inputs.inputs(
+        filename=os.path.join(FLAGS.data_dir, inputs.TRAIN_FILE),
+        batch_size=32, num_epochs=100)
 
-    for i in range(1000):
-        batch_x, batch_y = mnist.train.next_batch(32)
-        if i % 100 == 0:
-            train_accuracy = sess.run(accuracy, feed_dict={
-                x: batch_x, y_: batch_y, keep_prob: 1.0})
-            print("step %d, training accuracy %g" % (i, train_accuracy))
-        sess.run(train_step, feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
+    with tf.train.MonitoredTrainingSession() as sess:
+        #tf.global_variables_initializer().run()
+        batch_x, batch_y = sess.run([images, labels])
+        print('batch_x', batch_x.shape, 'batch_y', batch_y.shape)
+        for i in range(1000):
+            if i % 100 == 0:
+                train_accuracy = sess.run(accuracy, feed_dict={
+                    x: batch_x, y_: batch_y, keep_prob: 1.0})
+                print("step %d, training accuracy %g" % (i, train_accuracy))
+            sess.run(train_step, feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
 
-    print("test accuracy %g" % sess.run(accuracy, feed_dict={
-        x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
+        # print("test accuracy %g" % sess.run(accuracy, feed_dict={
+        #     x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
 
 
 if __name__ == '__main__':
