@@ -7,6 +7,7 @@ import tensorflow as tf
 from const import *
 from model import crack_captcha_cnn
 from inputs import get_next_batch
+from inputs import read_inputs
 import utils
 
 
@@ -41,40 +42,57 @@ def train_crack_captcha_cnn():
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
     tf.summary.scalar("accuracy", accuracy)
 
+    inputs, _ = read_inputs()
     merged = tf.summary.merge_all()
 
     saver = tf.train.Saver()
     with tf.Session() as sess:
+        # saver.restore(sess, tf.train.latest_checkpoint(CHECK_POINTS_DIR))
         sess.run(tf.global_variables_initializer())
+
+        coord = tf.train.Coordinator()
+        threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+
         writer = tf.summary.FileWriter(LOG_DIR, sess.graph)
         step = 0
-        while True:
-            batch_x, batch_y = get_next_batch(TRAIN_BATCH_SIZE)
-            merged_op, _, loss_ = sess.run(
-                [merged, optimizer, loss],
-                feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
-            if step % 10 == 0:
-                utils.pprint(step, loss=loss_)
-                writer.add_summary(merged_op, step)
-            # 每100 step计算一次准确率
-            if step % 100 == 0:
-                batch_x_test, batch_y_test = get_next_batch(TEST_BATCH_SIZE)
-                merged_op1, acc = sess.run(
-                    [merged, accuracy],
-                    feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
-                writer.add_summary(merged_op1, step)
-                utils.pprint(step, accuracy=acc)
-                # 如果准确率大于50%,保存模型,完成训练
-                if acc > CHECK_POINTS_SAVE_ACCURACY:
+        try:
+            while not coord.should_stop():
+                batch_x, batch_y = sess.run(inputs)
+                # batch_x, batch_y = get_next_batch(TRAIN_BATCH_SIZE)
+                merged_op, _, loss_ = sess.run(
+                    [merged, optimizer, loss],
+                    feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
+
+                if step and step % 10 == 0:
+                    utils.pprint(step, loss=loss_)
+                    writer.add_summary(merged_op, step)
+
+                # 每100 step计算一次准确率
+                if step and step % 100 == 0:
+                    batch_x_test, batch_y_test = sess.run(inputs)
+                    # batch_x_test, batch_y_test = get_next_batch(TEST_BATCH_SIZE)
+                    merged_op1, acc = sess.run(
+                        [merged, accuracy],
+                        feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
+                    writer.add_summary(merged_op1, step)
+                    utils.pprint(step, accuracy=acc)
+                    if acc > CHECK_POINTS_SAVE_ACCURACY:
+                        saver.save(
+                            sess, CHECK_POINTS_DIR + "crack_capcha_break.model", global_step=step)
+
+                # 每1w步保存一次系数
+                if step and step % CHECK_POINTS_SAVE_SEQ_STEPS == 0:
                     saver.save(
-                        sess, CHECK_POINTS_DIR + "crack_capcha_break.model", global_step=step)
+                        sess, CHECK_POINTS_DIR + "crack_capcha.model", global_step=step)
 
-            # 每1w步保存一次系数
-            if step % CHECK_POINTS_SAVE_SEQ_STEPS == 0 and step:
-                saver.save(
-                    sess, CHECK_POINTS_DIR + "crack_capcha.model", global_step=step)
+                step += 1
 
-            step += 1
+        except tf.errors.OutOfRangeError:
+            print(">>>>>>>>>>>>>> OutOfRangeError <<<<<<<<<<<<<<")
+        finally:
+            coord.request_stop()
+            coord.join(threads)
+            writer.close()
 
 if __name__ == '__main__':
     train_crack_captcha_cnn()

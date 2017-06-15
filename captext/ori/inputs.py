@@ -44,6 +44,7 @@ def transform_label(s):
 
 def read_inputs():
     files = glob.glob(TRAIN_SETS)
+    files = [i for i in files if len(os.path.basename(i).split(".")[0]) == 4]
     filename_queue = tf.train.string_input_producer(files)
     reader = tf.WholeFileReader()
 
@@ -54,21 +55,26 @@ def read_inputs():
     image = tf.image.resize_image_with_crop_or_pad(
         image, IMAGE_HEIGHT, IMAGE_WIDTH)
 
+    image = tf.reshape(tf.image.rgb_to_grayscale(image),
+                       [IMAGE_HEIGHT * IMAGE_WIDTH])
+
     label = tf.py_func(transform_label, [key], tf.float64)
     label = tf.reshape(label, [CHAR_SET_LEN * MAX_CAPTCHA])
 
     inputs = tf.train.shuffle_batch([image, label], batch_size=DEFAULT_BATCH_SIZE,
                                     capacity=DEFAULT_BATCH_SIZE * 5,
                                     min_after_dequeue=DEFAULT_BATCH_SIZE * 2)
-    image_summary = tf.summary.image('image', inputs[0])
 
-    return inputs, image_summary
+    x_image = tf.reshape(inputs[0], [-1, IMAGE_HEIGHT, IMAGE_WIDTH, 1])
+    smry = tf.summary.image('image', x_image, 10)
+
+    return inputs, smry
 
 
 if __name__ == "__main__":
-    inputs, image_summary = read_inputs()
+    inputs, summary = read_inputs()
 
-    writer = tf.summary.FileWriter('log')
+    writer = tf.summary.FileWriter('logt')
 
     with tf.Session() as sess:
         coord = tf.train.Coordinator()
@@ -80,7 +86,7 @@ if __name__ == "__main__":
                 image, label = sess.run(inputs)
                 print(image.shape)
                 print(label.shape)
-                writer.add_summary(sess.run(image_summary))
+                writer.add_summary(sess.run(summary))
         except tf.errors.OutOfRangeError:
             pass
         finally:

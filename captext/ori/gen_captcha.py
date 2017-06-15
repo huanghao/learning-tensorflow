@@ -6,8 +6,8 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-# from captcha.image import ImageCaptcha
-from tbcap import ImageCaptcha
+from captcha.image import ImageCaptcha
+# from tbcap import ImageCaptcha
 from const import *
 
 
@@ -17,7 +17,7 @@ def random_captcha_text(captcha_size=MAX_CAPTCHA):
     return random.sample(CHAR_SET, captcha_size)
 
 
-def gen_captcha_text_and_image(need_save=False):
+def gen_captcha_text_and_image(need_save=False, save_dir=""):
     """生成字符对应的验证码"""
     image = ImageCaptcha(width=IMAGE_WIDTH, height=IMAGE_HEIGHT)
 
@@ -26,7 +26,7 @@ def gen_captcha_text_and_image(need_save=False):
 
     captcha = image.generate(captcha_text)
     if need_save:
-        image.write(captcha_text, captcha_text + '.jpg')  # 写到文件
+        image.write(captcha_text, save_dir + "/" + captcha_text + '.png')  # 写到文件
 
     captcha_image = Image.open(captcha)
     captcha_image = np.array(captcha_image)
@@ -34,10 +34,13 @@ def gen_captcha_text_and_image(need_save=False):
     return captcha_text, captcha_image
 
 if __name__ == '__main__':
-    text, image = gen_captcha_text_and_image()
-    print(text, image.shape)
-    f = plt.figure()
-    ax = f.add_subplot(111)
-    ax.text(0.1, 0.9, text, ha='center', va='center', transform=ax.transAxes)
-    plt.imshow(image)
-    plt.show()
+    for i in range(1000):
+        gen_captcha_text_and_image(True, "data/datasets")
+
+    # text, image = gen_captcha_text_and_image()
+    # print(text, image.shape)
+    # f = plt.figure()
+    # ax = f.add_subplot(111)
+    # ax.text(0.1, 0.9, text, ha='center', va='center', transform=ax.transAxes)
+    # plt.imshow(image)
+    # plt.show()
