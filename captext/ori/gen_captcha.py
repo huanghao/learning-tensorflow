@@ -34,7 +34,7 @@ def gen_captcha_text_and_image(need_save=False, save_dir=""):
     return captcha_text, captcha_image
 
 if __name__ == '__main__':
-    for i in range(1000):
+    for i in range(2000):
         gen_captcha_text_and_image(True, "data/datasets")
 
     # text, image = gen_captcha_text_and_image()

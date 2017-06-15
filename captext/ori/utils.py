@@ -82,9 +82,9 @@ print(text)  # SFd5
 def pprint(step, loss=None, accuracy=None):
     format_str = '%s: step %d, '
     if loss:
-        format_str += 'loss = %.2f'
+        format_str += 'loss = %f'
         print (format_str % (datetime.now(), step, loss))
     if accuracy:
-        format_str += 'accuracy = %.2f'
+        format_str += 'accuracy = %f'
         print (format_str % (datetime.now(), step, accuracy))
 

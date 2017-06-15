@@ -21,6 +21,7 @@ TRAIN_SETS = 'data/datasets/*'
 CHECK_POINTS_DIR = './ckpoints/'
 CHECK_POINTS_SAVE_SEQ_STEPS = 10000
 CHECK_POINTS_SAVE_ACCURACY = 0.98
+TRAIN_SET_NUM = 2000
 
 X = tf.placeholder(tf.float32, [None, IMAGE_HEIGHT * IMAGE_WIDTH])
 Y = tf.placeholder(tf.float32, [None, MAX_CAPTCHA * CHAR_SET_LEN])
