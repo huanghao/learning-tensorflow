@@ -2,7 +2,14 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+import time
+import copy
+from datetime import datetime
+
 import tensorflow as tf
+from tensorflow.python.training import training_util
+from tensorflow.python.training import session_run_hook
+from tensorflow.python.training.session_run_hook import SessionRunArgs
 
 from const import *
 from model import crack_captcha_cnn
@@ -26,14 +33,16 @@ def compute_loss(output):
 def train_crack_captcha_cnn():
     """训练"""
     output = crack_captcha_cnn()
+    global_step_tensor = tf.contrib.framework.get_or_create_global_step()
     # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, Y))
     loss = tf.reduce_mean(
         tf.nn.sigmoid_cross_entropy_with_logits(logits=output, labels=Y))
     # loss = compute_loss(output)
     # 最后一层用来分类的softmax和sigmoid有什么不同？
-    # optimizer 为了加快训练 learning_rate应该开始大，然后慢慢衰
+    # train 为了加快训练 learning_rate应该开始大，然后慢慢衰
     tf.summary.scalar("loss", loss)
-    optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
+    train = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(
+        loss, global_step=global_step_tensor)
 
     predict = tf.reshape(output, [-1, MAX_CAPTCHA, CHAR_SET_LEN])
     max_idx_p = tf.argmax(predict, 2)
@@ -46,55 +55,98 @@ def train_crack_captcha_cnn():
     merged = tf.summary.merge_all()
 
     saver = tf.train.Saver()
-    with tf.Session() as sess:
-        # saver.restore(sess, tf.train.latest_checkpoint(CHECK_POINTS_DIR))
-        sess.run(tf.global_variables_initializer())
+    train_writer = tf.summary.FileWriter(LOG_DIR + "/train")
+    test_writer = tf.summary.FileWriter(LOG_DIR + "/test")
 
-        coord = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+    class InputHook(session_run_hook.SessionRunHook):
+        def before_run(self, run_context):
+            # batch_x, batch_y = get_next_batch(TRAIN_BATCH_SIZE)
+            batch_x, batch_y = run_context.session.run(inputs)
+            return session_run_hook.SessionRunArgs(
+                fetches=None, feed_dict={
+                    X: batch_x,
+                    Y: batch_y,
+                    keep_prob: TRAIN_KEEP_DROP
+                })
 
-        train_writer = tf.summary.FileWriter(LOG_DIR+"/train", sess.graph)
-        test_writer = tf.summary.FileWriter(LOG_DIR+"/test")
-        step = 0
-        try:
-            while not coord.should_stop():
-                batch_x, batch_y = sess.run(inputs)
-                # batch_x, batch_y = get_next_batch(TRAIN_BATCH_SIZE)
-                merged_op, _, loss_ = sess.run(
-                    [merged, optimizer, loss],
-                    feed_dict={X: batch_x, Y: batch_y, keep_prob: 0.75})
+    class VerifyAccuracyHook(session_run_hook.SessionRunHook):
+        def begin(self):
+            self._start_time = time.time()
+            l1 = [i for i in utils.frange(0.1, 0.6, 0.1)]
+            l2 = [j for j in utils.frange(0.5, 1.1, 0.05)]
+            self._acc_interval = l1 + l2
+            self._global_step_tensor = training_util.get_global_step()
 
-                if step and step % 10 == 0:
-                    utils.pprint(step, loss=loss_)
-                    train_writer.add_summary(merged_op, step)
+        def before_run(self, run_context):
+            return SessionRunArgs(self._global_step_tensor)
 
-                # 每100 step计算一次准确率
-                if step and step % 100 == 0:
-                    # batch_x_test, batch_y_test = sess.run(inputs)
-                    batch_x_test, batch_y_test = get_next_batch(TEST_BATCH_SIZE)
-                    merged_op1, acc = sess.run(
-                        [merged, accuracy],
-                        feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
-                    test_writer.add_summary(merged_op1, step)
-                    utils.pprint(step, accuracy=acc)
-                    if acc > CHECK_POINTS_SAVE_ACCURACY:
-                        saver.save(
-                            sess, CHECK_POINTS_DIR + "end_model.ckpt", global_step=step)
+        def after_run(self, run_context, run_values):
+            global_step = run_values.results
+            if not (global_step and
+                    global_step % VERIFY_ACCURACY_STEPS == 0):
+                return
 
-                # 每1w步保存一次系数
-                if step and step % CHECK_POINTS_SAVE_SEQ_STEPS == 0:
-                    saver.save(
-                        sess, CHECK_POINTS_DIR + "model.ckpt", global_step=step)
+            batch_x_test, batch_y_test = get_next_batch(TEST_BATCH_SIZE)
+            merged_, acc = run_context.session.run(
+                [merged, accuracy],
+                feed_dict={X: batch_x_test, Y: batch_y_test,
+                           keep_prob: TEST_KEEP_DROP})
+            test_writer.add_summary(merged_, global_step)
 
-                step += 1
+            duration = time.time() - self._start_time
+            info = utils.print_accuracy(global_step, duration, accuracy=acc)
 
-        except tf.errors.OutOfRangeError:
-            print(">>>>>>>>>>>>>> OutOfRangeError <<<<<<<<<<<<<<")
-        finally:
-            coord.request_stop()
-            coord.join(threads)
-            test_writer.close()
-            train_writer.close()
+            _tmp = copy.copy(self._acc_interval)
+            self._acc_interval = [i for i in _tmp if i > acc]
+            if self._acc_interval != _tmp:
+                utils.logger.info(info)
+
+            if acc > CHECK_POINTS_SAVE_ACCURACY:
+                saver.save(
+                    sess, CHECK_POINTS_DIR + ACC_CHECKPOINT_BASENAME,
+                    global_step=global_step)
+
+                run_context.request_stop()  # 正确率达标，终止训练
+
+    class LoggerHook(tf.train.SessionRunHook):
+        def begin(self):
+            self._start_time = time.time()
+            self._global_step_tensor = training_util.get_global_step()
+
+        def before_run(self, run_context):
+            return tf.train.SessionRunArgs([self._global_step_tensor, loss])
+
+        def after_run(self, run_context, run_values):
+            global_step, loss_value = run_values.results
+            if global_step % LOG_FREQUENCY == 0:
+                current_time = time.time()
+                duration = current_time - self._start_time
+                self._start_time = current_time
+
+                examples_per_sec = LOG_FREQUENCY * DEFAULT_BATCH_SIZE / duration
+                sec_per_batch = float(duration / LOG_FREQUENCY)
+
+                format_str = ('%s step %d, loss = %f'
+                              ' (%.1f examples/sec; %.3f sec/batch)')
+                print (format_str % (datetime.now().strftime("%m-%d %H:%M:%S"),
+                                     global_step, loss_value, examples_per_sec,
+                                     sec_per_batch))
+
+    hooks = [
+        LoggerHook(),
+        tf.train.CheckpointSaverHook(
+            CHECK_POINTS_DIR, save_steps=CHECK_POINTS_SAVE_SEQ_STEPS,
+            saver=saver, checkpoint_basename=CHECKPOINT_BASENAME),
+        tf.train.SummarySaverHook(
+            SUMMARY_SAVE_STEPS, summary_writer=train_writer, summary_op=merged
+        ),
+        VerifyAccuracyHook(),
+        InputHook(),
+    ]
+
+    with tf.train.MonitoredTrainingSession(hooks=hooks) as sess:
+        while not sess.should_stop():
+            sess.run(train)
 
 if __name__ == '__main__':
     train_crack_captcha_cnn()

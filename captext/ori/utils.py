@@ -1,10 +1,17 @@
 # coding: utf-8
 
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from const import *
+import logging
 
+logger = logging.getLogger("accuracy")
+formatter = logging.Formatter('[%(levelname)s] %(message)s')
+file_handler = logging.FileHandler(LOG_DIR + "/accuracy.log")
+file_handler.setFormatter(formatter)
+logger.setLevel(logging.INFO)
+logger.addHandler(file_handler)
 
 def convert2gray(img):
     """把彩色图像转为灰度图像（色彩对识别验证码没有什么用）"""
@@ -79,12 +86,31 @@ print(text)  # SFd5
 """
 
 
+def frange(start, stop, step):
+    x = start
+    while x < stop:
+        yield round(x, 2)
+        x += step
+
+
 def pprint(step, loss=None, accuracy=None):
-    format_str = '%s: step %d, '
+    format_str = '%s step %d, '
     if loss:
         format_str += 'loss = %f'
-        print (format_str % (datetime.now(), step, loss))
+        print (format_str % (
+            datetime.now().strftime("%m-%d %H:%M:%S"), step, loss))
     if accuracy:
         format_str += 'accuracy = %f'
-        print (format_str % (datetime.now(), step, accuracy))
+        print(format_str % (datetime.now().strftime("%m-%d %H:%M:%S"), step, accuracy))
 
+
+def print_accuracy(step, duration, accuracy=None):
+    format_str = '%s step %d, '
+    format_str += 'accuracy = %f (duration: %s)'
+    info = (format_str % (
+        datetime.now().strftime("%m-%d %H:%M:%S"), step,
+        accuracy, timedelta(seconds=duration)))
+
+    print(info)
+
+    return info
