@@ -2,7 +2,7 @@ Theory is when you know everthing but nothing works.
 Practice is when everything works but no one knows why.
 In our lab, theory and practice are combined: nothing works and no one knows why.
 
-- Decaying the learning rate
+- L Momentum And Learning Rate Decay
 - Moving Averages
 - tf.control_dependencies
 - https://www.tensorflow.org/api_guides/python/image
@@ -23,6 +23,14 @@ GAN -> DCGAN -> wGAN
 SRGAN, SalGAN, RLA
 Boltzmann machine 
 http://www.deeplearningbook.org/
+
+SGD "black magic", hyper-parameters
+- initial learing rate
+- learning rate decay
+- momentum
+- batch size
+- weight initialization
+- ADAGRAD
 
 notorious problem of vanishing/exploding gradients [1, 9]
 - [9] X. Glorot and Y. Bengio. Understanding the difficulty of training deep feedforward neural networks. In AISTATS, 2010.
