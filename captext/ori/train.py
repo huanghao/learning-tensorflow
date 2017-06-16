@@ -53,7 +53,8 @@ def train_crack_captcha_cnn():
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
-        writer = tf.summary.FileWriter(LOG_DIR, sess.graph)
+        train_writer = tf.summary.FileWriter(LOG_DIR+"/train", sess.graph)
+        test_writer = tf.summary.FileWriter(LOG_DIR+"/test")
         step = 0
         try:
             while not coord.should_stop():
@@ -65,7 +66,7 @@ def train_crack_captcha_cnn():
 
                 if step and step % 10 == 0:
                     utils.pprint(step, loss=loss_)
-                    writer.add_summary(merged_op, step)
+                    train_writer.add_summary(merged_op, step)
 
                 # 每100 step计算一次准确率
                 if step and step % 100 == 0:
@@ -74,16 +75,16 @@ def train_crack_captcha_cnn():
                     merged_op1, acc = sess.run(
                         [merged, accuracy],
                         feed_dict={X: batch_x_test, Y: batch_y_test, keep_prob: 1.})
-                    writer.add_summary(merged_op1, step)
+                    test_writer.add_summary(merged_op1, step)
                     utils.pprint(step, accuracy=acc)
                     if acc > CHECK_POINTS_SAVE_ACCURACY:
                         saver.save(
-                            sess, CHECK_POINTS_DIR + "crack_capcha_break.model", global_step=step)
+                            sess, CHECK_POINTS_DIR + "end_model.ckpt", global_step=step)
 
                 # 每1w步保存一次系数
                 if step and step % CHECK_POINTS_SAVE_SEQ_STEPS == 0:
                     saver.save(
-                        sess, CHECK_POINTS_DIR + "crack_capcha.model", global_step=step)
+                        sess, CHECK_POINTS_DIR + "model.ckpt", global_step=step)
 
                 step += 1
 
@@ -92,7 +93,8 @@ def train_crack_captcha_cnn():
         finally:
             coord.request_stop()
             coord.join(threads)
-            writer.close()
+            test_writer.close()
+            train_writer.close()
 
 if __name__ == '__main__':
     train_crack_captcha_cnn()

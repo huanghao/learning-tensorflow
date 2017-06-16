@@ -45,8 +45,9 @@ def transform_label(s):
 def read_inputs():
     files = glob.glob(TRAIN_SETS)
     files = [i for i in files if len(os.path.basename(i).split(".")[0]) == 4]
-    files = random.sample(files, TRAIN_SET_NUM)
-    print(">>>>>>>>> train set num: ", TRAIN_SET_NUM)
+    if TRAIN_SET_NUM < len(files):
+        files = random.sample(files, TRAIN_SET_NUM)
+    print(">>>>>>>>> train set num: ", len(files))
     filename_queue = tf.train.string_input_producer(files)
     reader = tf.WholeFileReader()
 
