@@ -122,4 +122,7 @@ def print_accuracy(step, duration, accuracy=None):
 
 def print_const_info():
     msgs = os.popen("cat const.py | sed  -n '%d,%d p'" % (5, 1000))
-    map(lambda x: logger.debug(x.strip()), [i for i in msgs.readlines() if i.strip()])
+    # map(lambda x: logger.debug(x.strip()), [i for i in msgs.readlines() if i.strip()])
+    for i in msgs.readlines():
+        if i.strip():
+            logger.debug(i.strip())

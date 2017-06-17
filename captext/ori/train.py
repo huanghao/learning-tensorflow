@@ -60,8 +60,8 @@ def train_crack_captcha_cnn():
 
     class InputHook(session_run_hook.SessionRunHook):
         def before_run(self, run_context):
-            # batch_x, batch_y = get_next_batch(TRAIN_BATCH_SIZE)
-            batch_x, batch_y = run_context.session.run(inputs)
+            batch_x, batch_y = get_next_batch(TRAIN_BATCH_SIZE)
+            # batch_x, batch_y = run_context.session.run(inputs)
             return session_run_hook.SessionRunArgs(
                 fetches=None, feed_dict={
                     X: batch_x,
