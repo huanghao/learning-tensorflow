@@ -1,16 +1,21 @@
 # coding: utf-8
 
+import os
 import numpy as np
 from datetime import datetime, timedelta
 
 from const import *
+
 import logging
+
+if not os.path.exists(LOG_DIR):
+    os.mkdir(LOG_DIR)
 
 logger = logging.getLogger("accuracy")
 formatter = logging.Formatter('[%(levelname)s] %(message)s')
-file_handler = logging.FileHandler(LOG_DIR + "/accuracy.log")
+file_handler = logging.FileHandler(DEBUG_LOG)
 file_handler.setFormatter(formatter)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 
 def convert2gray(img):
@@ -105,12 +110,16 @@ def pprint(step, loss=None, accuracy=None):
 
 
 def print_accuracy(step, duration, accuracy=None):
-    format_str = '%s step %d, '
-    format_str += 'accuracy = %f (duration: %s)'
+    format_str = '%s step %d, accuracy = %f (duration: %s trainsets number: %d)'
     info = (format_str % (
         datetime.now().strftime("%m-%d %H:%M:%S"), step,
-        accuracy, timedelta(seconds=duration)))
+        accuracy, timedelta(seconds=duration), step * TRAIN_BATCH_SIZE))
 
     print(info)
 
     return info
+
+
+def print_const_info():
+    msgs = os.popen("cat const.py | sed  -n '%d,%d p'" % (5, 1000))
+    map(lambda x: logger.debug(x.strip()), [i for i in msgs.readlines() if i.strip()])

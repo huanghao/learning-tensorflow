@@ -51,7 +51,7 @@ def train_crack_captcha_cnn():
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
     tf.summary.scalar("accuracy", accuracy)
 
-    inputs, _ = read_inputs()
+    inputs, _ = read_inputs(TRAIN_BATCH_SIZE)
     merged = tf.summary.merge_all()
 
     saver = tf.train.Saver()
@@ -101,9 +101,10 @@ def train_crack_captcha_cnn():
             if self._acc_interval != _tmp:
                 utils.logger.info(info)
 
-            if acc > CHECK_POINTS_SAVE_ACCURACY:
+            if acc >= CHECK_POINTS_SAVE_ACCURACY:
                 saver.save(
-                    sess, CHECK_POINTS_DIR + ACC_CHECKPOINT_BASENAME,
+                    run_context.session,
+                    CHECK_POINTS_DIR + ACC_CHECKPOINT_BASENAME,
                     global_step=global_step)
 
                 run_context.request_stop()  # 正确率达标，终止训练
@@ -123,7 +124,7 @@ def train_crack_captcha_cnn():
                 duration = current_time - self._start_time
                 self._start_time = current_time
 
-                examples_per_sec = LOG_FREQUENCY * DEFAULT_BATCH_SIZE / duration
+                examples_per_sec = LOG_FREQUENCY * TRAIN_BATCH_SIZE / duration
                 sec_per_batch = float(duration / LOG_FREQUENCY)
 
                 format_str = ('%s step %d, loss = %f'
@@ -149,4 +150,5 @@ def train_crack_captcha_cnn():
             sess.run(train)
 
 if __name__ == '__main__':
+    utils.print_const_info()
     train_crack_captcha_cnn()

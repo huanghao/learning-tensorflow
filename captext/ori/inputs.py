@@ -12,7 +12,7 @@ from const import *
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-def get_next_batch(batch_size=DEFAULT_BATCH_SIZE):
+def get_next_batch(batch_size):
     """生成一个训练batch"""
     batch_x = np.zeros([batch_size, IMAGE_HEIGHT * IMAGE_WIDTH])
     batch_y = np.zeros([batch_size, MAX_CAPTCHA * CHAR_SET_LEN])
@@ -42,7 +42,7 @@ def transform_label(s):
     return utils.text2vec(text)
 
 
-def read_inputs():
+def read_inputs(batch_size):
     files = glob.glob(TRAIN_SETS)
     files = [i for i in files if len(os.path.basename(i).split(".")[0]) == 4]
     if TRAIN_SET_NUM < len(files):
@@ -64,9 +64,9 @@ def read_inputs():
     label = tf.py_func(transform_label, [key], tf.float64)
     label = tf.reshape(label, [CHAR_SET_LEN * MAX_CAPTCHA])
 
-    inputs = tf.train.shuffle_batch([image, label], batch_size=DEFAULT_BATCH_SIZE,
-                                    capacity=DEFAULT_BATCH_SIZE * 5,
-                                    min_after_dequeue=DEFAULT_BATCH_SIZE * 2)
+    inputs = tf.train.shuffle_batch([image, label], batch_size=batch_size,
+                                    capacity=batch_size * 5,
+                                    min_after_dequeue=batch_size * 2)
 
     x_image = tf.reshape(inputs[0], [-1, IMAGE_HEIGHT, IMAGE_WIDTH, 1])
     smry = tf.summary.image('image', x_image, 10)
