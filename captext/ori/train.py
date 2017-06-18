@@ -102,6 +102,8 @@ def train_crack_captcha_cnn():
                 utils.logger.info(info)
 
             if acc >= CHECK_POINTS_SAVE_ACCURACY:
+                # logging accuracy done info.
+                utils.logger.info(info)
                 saver.save(
                     run_context.session,
                     CHECK_POINTS_DIR + ACC_CHECKPOINT_BASENAME,
