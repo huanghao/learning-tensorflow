@@ -25,7 +25,7 @@ def crack_captcha_cnn(w_alpha=0.01, b_alpha=0.1):
         tf.nn.conv2d(x, w_c1, strides=[1, 1, 1, 1], padding='SAME'), b_c1))
     conv1 = tf.nn.max_pool(conv1, ksize=[1, 2, 2, 1],
                            strides=[1, 2, 2, 1], padding='SAME')
-    conv1 = tf.nn.dropout(conv1, keep_prob)
+    # conv1 = tf.nn.dropout(conv1, keep_prob)
 
     w_c2 = tf.Variable(w_alpha * tf.random_normal([3, 3, 32, 64]))
     b_c2 = tf.Variable(b_alpha * tf.random_normal([64]))
@@ -33,7 +33,7 @@ def crack_captcha_cnn(w_alpha=0.01, b_alpha=0.1):
         tf.nn.conv2d(conv1, w_c2, strides=[1, 1, 1, 1], padding='SAME'), b_c2))
     conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1],
                            strides=[1, 2, 2, 1], padding='SAME')
-    conv2 = tf.nn.dropout(conv2, keep_prob)
+    # conv2 = tf.nn.dropout(conv2, keep_prob)
 
     w_c3 = tf.Variable(w_alpha * tf.random_normal([3, 3, 64, 64]))
     b_c3 = tf.Variable(b_alpha * tf.random_normal([64]))
@@ -41,15 +41,15 @@ def crack_captcha_cnn(w_alpha=0.01, b_alpha=0.1):
         tf.nn.conv2d(conv2, w_c3, strides=[1, 1, 1, 1], padding='SAME'), b_c3))
     conv3 = tf.nn.max_pool(conv3, ksize=[1, 2, 2, 1],
                            strides=[1, 2, 2, 1], padding='SAME')
-    conv3 = tf.nn.dropout(conv3, keep_prob)
+    # conv3 = tf.nn.dropout(conv3, keep_prob)
 
-    #w_c4 = tf.Variable(w_alpha * tf.random_normal([3, 3, 64, 128]))
-    #b_c4 = tf.Variable(b_alpha * tf.random_normal([128]))
-    #conv4 = tf.nn.relu(tf.nn.bias_add(
-    #    tf.nn.conv2d(conv3, w_c4, strides=[1, 1, 1, 1], padding='SAME'), b_c4))
-    #conv4 = tf.nn.max_pool(conv4, ksize=[1, 2, 2, 1],
-    #                       strides=[1, 2, 2, 1], padding='SAME')
-    #conv4 = tf.nn.dropout(conv4, keep_prob)
+    # w_c4 = tf.Variable(w_alpha * tf.random_normal([3, 3, 64, 128]))
+    # b_c4 = tf.Variable(b_alpha * tf.random_normal([128]))
+    # conv4 = tf.nn.relu(tf.nn.bias_add(
+    #     tf.nn.conv2d(conv3, w_c4, strides=[1, 1, 1, 1], padding='SAME'), b_c4))
+    # conv4 = tf.nn.max_pool(conv4, ksize=[1, 2, 2, 1],
+    #                        strides=[1, 2, 2, 1], padding='SAME')
+    # conv4 = tf.nn.dropout(conv4, keep_prob)
 
     # Fully connected layer
     _, a, b, c = conv3.get_shape().as_list()
