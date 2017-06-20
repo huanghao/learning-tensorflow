@@ -1,0 +1,32 @@
+https://classroom.udacity.com/courses/ud730
+
+模型，层数
+正规化，regularization，dropout(0.75->0.5)，weight decay
+标准化，normalization，0-mean，small equal variance
+random batch
+数据增强
+
+# Lesson1: From Machine Learning to Deep Learing
+
+One good guilding principle is that we always want our variables to have 0 mean and equal variance whenever possible. On top of the numerical issues, there are also a really good mathematical reasons to keep values you compute roughly around a mean of zero. In equal variance when you're doing optimization. A badly conditioned problem means that the optimizer has to do a lot of searching to go and find a good solution. A well conditioned problems makes it a lot easier for the optimizer to do its job.
+
+If you're dealing with images it's simple. You can take the pixel values of your image, they are usually between 0 and 255. And simply subtract 128 and divide by 128. It doesn't change the content of your image, but it makes it much easier for the oprimization to proceed numerically.
+
+# Lesson 3: Deep Neural Networks
+
+there is a general issue when you're doing numerical optimization which I call the skinny jeans problem. Skinny jeans look great, they fit perfectly, but they're really, really hard to get into. So most people end up wearing jeans that are just a bit too big.
+
+It's exactly the same with deep networks. The networks that's just the right size for your data is very, very hard to optimize. So in practice, we always try nets that are way too big for our data and then we try our best to prevent them from overfitting.
+
+If dropout doesn't work for you, you should probably be using a bigger network.
+
+Here's a trick to make sure this expectation holds. During training, not only do you use zero out so the activation that you drop out, but you also scale the remaining activation by a factor of 2. This way, when it comes time to average the during evaluation, you just remove there dropouts and scalling operations from your nerual net. And the result is an average of these activations that is properly scaled.
+
+# Lesson 4: convnet
+
+how about you telling it, instead explicitly, that objects and images are largely the same whether they're on the left or on the right of the picture. That's what's called translation invariance. Different positions, same kitten.
+
+Either you don't go pass the edge, and it's often called valid padding as a shortcut. Or you go off the edge and pad with zeros in such a way that the output map size is exactly the same size as the input map. That is often called same padding as a shortcut.
+
+# Lesson 5: deep models for text and sequences
+
