@@ -67,5 +67,7 @@ safetyNet aatestation api
 文案检查，错别字，漏字
 淘宝验证码生成器
 
-https://www.nervanasys.com/demystifying-deep-reinforcement-learning/
-https://arxiv.org/abs/1312.5602 : Playing Atari with Deep Reinforcement Learning
+RL:
+Playing Atari with Deep Reinforcement Learning
+Human-level control through deep reinforcement learning
+http://users.isr.ist.utl.pt/~mtjspaan/readingGroup/ProofQlearning.pdf
