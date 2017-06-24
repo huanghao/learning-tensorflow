@@ -54,16 +54,16 @@ def read_inputs(batch_size):
     key, val = reader.read(filename_queue)
 
     image = tf.image.decode_png(val, 3)
-
-    # 标准化  均值和方差均为0 (image - 128) / 128
-    _tmp = np.full(image.shape, 128)
-    image = tf.div(tf.subtract(image, _tmp), _tmp)
     image = tf.cast(image, tf.float32)
     image = tf.image.resize_image_with_crop_or_pad(
         image, IMAGE_HEIGHT, IMAGE_WIDTH)
 
     image = tf.reshape(tf.image.rgb_to_grayscale(image),
                        [IMAGE_HEIGHT * IMAGE_WIDTH])
+
+    # 标准化  均值和方差均为0 (image - 128) / 128
+    _tmp = np.full(image.shape, 128)
+    image = tf.div(tf.subtract(image, _tmp), _tmp)
 
     label = tf.py_func(transform_label, [key], tf.float64)
     label = tf.reshape(label, [CHAR_SET_LEN * MAX_CAPTCHA])
