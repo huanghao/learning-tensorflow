@@ -71,3 +71,5 @@ RL:
 Playing Atari with Deep Reinforcement Learning
 Human-level control through deep reinforcement learning
 http://users.isr.ist.utl.pt/~mtjspaan/readingGroup/ProofQlearning.pdf
+[26] Christopher JCH Watkins and Peter Dayan. Q-learning. Machine learning, 8(3-4):279–292, 1992.
+[13] Long-Ji Lin. Reinforcement learning for robots using neural networks. Technical report, DTIC Document, 1993.
