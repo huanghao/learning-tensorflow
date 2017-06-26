@@ -28,7 +28,9 @@ def get_next_batch(batch_size):
         text, image = wrap_gen_captcha_text_and_image()
         image = utils.convert2gray(image)
 
-        batch_x[i, :] = image.flatten() / 255  # (image.flatten()-128)/128 mean为0
+        # batch_x[i, :] = image.flatten()  # 1
+        # batch_x[i, :] = image.flatten() / 255  # 2
+        batch_x[i, :] = (image.flatten() - 128) / 128.0  # 3
         batch_y[i, :] = utils.text2vec(text)
 
     return batch_x, batch_y
