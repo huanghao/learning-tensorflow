@@ -1,0 +1,12 @@
+<!doctype html>
+<title>Prediction</title>
+
+<table>
+{% for w, p, l in pred %}
+  <tr>
+    <td>{{ w }}</td>
+    <td>{{ p }}</td>
+    <td><div style='border:1px solid blue; height:1px; width:{{ l }}px;'></div></td>
+  </tr>
+{% endfor %}
+</table>
