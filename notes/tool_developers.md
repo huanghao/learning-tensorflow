@@ -1,32 +1,6 @@
 https://www.tensorflow.org/extend/tool_developers/
 
 
-类型定义只有25个proto，可以仔细看一下，基本就明白存储和交换的所有message类型了
-	$ ls core/framework/*.proto | wc -l
-	      25
-
-https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/graph.proto
-	repeated NodeDef node
-https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/node_def.proto
-	string name, op, device
-	repeated string input
-	map<string, AttrValue> attr
-https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/attr_value.proto
-	value 可以是多种类型，string/int/float/bool/type/shape/tensor/list(...)/func/placeholder
-		list(...)又可以是多种类型, list(string/int/float/bool/type/shape/tensor/attr)
-https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/tensor.proto
-	dtype
-	tensor_shape
-	tensor_content: serialized raw content
-	half_val/float_val/double_val/int_val/string_val/scomplex_val/int64_val/bool_val/dcomple_val/resource_handle_val/variant_val/uint32_val/uint64_val 这些看不懂
-https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/types.proto
-	DT_* 枚举所有的类型
-https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/framework/tensor_shape.proto
-	repeated dim
-		int64 size
-		string name
-	bool unknown_rank
-
 tf.GraphDef对应graph.proto定义
 
 生成graph_def有两种方式，文本和二进制的
