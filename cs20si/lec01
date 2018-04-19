@@ -1,0 +1,40 @@
+In [2]: a = tf.add(3, 5)
+
+In [3]: a
+Out[3]: <tf.Tensor 'Add:0' shape=() dtype=int32>
+
+In [4]: type(a)
+Out[4]: tensorflow.python.framework.ops.Tensor
+
+这个类型有点奇怪，ops.Tensor，到底是op还是tensor，按下面这个分类，到底是边还是节点？
+
+nodes: operators, variables, and constants
+edges: tensors
+
+tensors are data.
+tensorflow = tensor + flow = data + flow
+
+session encapsulates the env in which op are executed, and tensor are evaluated
+session will also allocate memory to store the current values of variables
+
+能到达到输出节点的node才会被计算
+
+
+possible to break graphs into several chunks and run them parallelly across multiple cpus, gpus, tpus or other devices
+
+session runs the default graph
+
+why graphs
+- save computation. only run subgraphs that lead to the values you want to fetch
+- break computation into small, differential peices to facilitate auto-differentiation
+- facilitate distributed computation
+
+生成语音和音乐
+https://deepmind.com/blog/wavenet-generative-model-raw-audio/
+
+https://magenta.tensorflow.org/
+
+https://magenta.tensorflow.org/sketch-rnn-demo
+
+eager mode
+https://research.googleblog.com/2017/10/eager-execution-imperative-define-by.html

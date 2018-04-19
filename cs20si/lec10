@@ -1,0 +1,10 @@
+https://docs.google.com/presentation/d/1VSNlkGcR-b39tMcuREjzZdhYOPvoZudpcbuNlf5hOIM/edit#slide=id.g30fdd2f6e9_0_237
+
+Images consist of millions of pixels, but there is likely a more compact representation of the content (objects, positions, etc)
+Finding the mapping to this representation allows us to find semantically similar images and even to generate new images
+We call the compact representation z and its corresponding pixels x, and this is the same structure for every of our N images
+
+
+Probabilistic programming made easy!
+tfd = tf.contrib.distributions
+

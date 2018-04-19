@@ -1,0 +1,9 @@
+https://docs.google.com/presentation/d/1QydMhsGFeUzDYZr7dV0tt9WJryleOoKUyJth4ftRDbA/edit#slide=id.g1ce324a1fd_0_183
+
+LSTMs vs GRUs
+People find LSTMs work well, but unnecessarily complicated, so they introduced GRUs
+
+Nallapati, Ramesh, et al. "Abstractive text summarization using sequence-to-sequence rnns and beyond." arXiv preprint arXiv:1602.06023 (2016).
+
+
+

@@ -1,0 +1,73 @@
+https://docs.google.com/presentation/d/1iO_bBL_5REuDQ7RJ2F35vH2BxAiGMocLC6t_N-6eXaE/edit#slide=id.g1bd10f151e_0_110
+
+去掉sse4那些cpu指令集支持的warning
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+
+learn to use tensorboard well and often
+
+constant
+- tf.zero
+- tf.zero_like
+- tf.ones
+- tf.ones_like
+- tf.fill
+- tf.lin_space
+- tf.range
+- tf.random_normal, truncted_normal, random_uniform, random_shuffle, random_crop, multinomial, random_gamma, set_random_seed
+
+operations
+- element-wise math op
+- array op
+- matrix op
+- stateful op: variable, assign, assignAdd
+- nn building blocks
+- checkpointing ops: save, restore
+- queue and synchronization ops: enqueue, dequeue, mutexacquire, mutexrelease
+- control flow ops: merge, switch, enter, leave, nextiteration
+
+In [17]: tf.int32 == np.int32
+Out[17]: True
+
+In [18]: tf.int32 is np.int32
+Out[18]: False
+
+In [19]: type(tf.int32)
+Out[19]: tensorflow.python.framework.dtypes.DType
+
+In [20]: type(np.int32)
+Out[20]: type
+
+use tf dtype when possible
+
+numpy is not gpu compatible
+
+sess.graph.as_graph_def()
+
+constants are stored in the graph definition
+this makes loading graphs expensive when constants are big
+->
+only use constants for primitive types
+use variables or readers for more data that requires more memory
+
+
+prefer tf.get_variable than tf.Variable for creating var
+
+initializer is an op. you need to execute it within the context of a session
+
+each session maintains its own copy of variables
+
+tf.Graph.control_dependencies(control_inputs)
+
+
+assemble graph相当于定义一个函数，tf.variable相当于函数的内部状态，tf.placeholder相当于函数的参数
+整个sess负责初始化，和执行这个函数，结果是确定的
+
+you can feed_dict any feedable tensor. Placeholder is just a way to indicate that something must be fed
+tf.Graph.is_feedable(tensor)
+extremely helpful for testing
+feed in dummy values to test parts of a large graph
+
+tf.get_default_graph().as_graph_def()
+
+One of the most common TF non-bug bugs I’ve seen on GitHub

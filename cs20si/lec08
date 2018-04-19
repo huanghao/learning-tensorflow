@@ -1,0 +1,11 @@
+https://docs.google.com/presentation/d/1ftgals7pXNOoNoWe0E9PO27miOpXbHrQIXyBm0YOiyc/edit#slide=id.g30a6f76e4b_0_64
+
+feature visualization have shown that
+- lower layers extract features related to content
+- higher layers extract features related to style
+
+content loss: measure the loss between `the feature maps in the content layer` of the generated image and the content image
+conv4_4
+
+style loss: measure the loss between `the feature maps in the style layers` of the genrated image and the style image
+conv1_1, conv2_1, conv3_1, conv4_1, conv5_1

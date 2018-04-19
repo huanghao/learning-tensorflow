@@ -1,0 +1,20 @@
+https://docs.google.com/presentation/d/1lmcQVNAmJrL8x3Iq0VB1mVaka1r6pOIb-TMVTX5Rufc/edit#slide=id.g1c14724a60_0_25
+
+constant values are stored in the graph definition
+sessions allocate memory to store variable values
+
+placeholder
+cons: users often end up processing their data in a single thread and creating data bottleneck that slows execution down
+->
+instead of doing inference with placeholders and feeding in data later, do inference directly with data
+
+tf.data.Dataset
+tf.data.Interator
+
+- For prototyping, feed dict can be faster and easier to write (pythonic)
+- tf.data is tricky to use when you have complicated preprocessing or multiple data sources
+- NLP data is normally just a sequence of integers. In this case, transferring the data over to GPU is pretty quick, so the speedup of tf.data isn't that large
+
+
+session looks all trainable variables that loss depends on and update them
+

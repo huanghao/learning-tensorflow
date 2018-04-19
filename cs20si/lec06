@@ -1,0 +1,25 @@
+https://docs.google.com/presentation/d/15E7NlyMkG8dAMa70i2OluprBDoz3UPyAk5ZpOiCkEqw/edit#slide=id.g306067c007_0_79
+
+segmentation
+Figure credit: Dai, He, and Sun, “Instance-aware Semantic Segmentation via Multi-task Network Cascades”, CVPR 2016
+
+pose estimation
+Figure credit: Cao et al, “Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields”, arXiv 2016
+
+image captioning
+Figure credit: Karpathy and Fei-Fei, “Deep Visual-Semantic Alignments for Generating Image Descriptions”, CVPR 2015
+Figure credit: Johnson*, Karpathy*, and Fei-Fei, “DenseCap: Fully Convolutional Localization Networks for Dense Captioning”, CVPR 2016
+
+QA
+Figure credit: Agrawal et al, “VQA: Visual Question Answering”, ICCV 2015 (left)
+Zhu et al, “Visual7W: Grounded Question Answering in Images”, CVPR 2016 (right)
+
+image super-resolution
+Figure credit: Ledig et al, “Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network”, arXiv 2016
+
+art generation
+Gatys, Ecker, and Bethge, “Image Style Transfer using Convolutional Neural Networks”, CVPR 2016 (left)
+Mordvintsev, Olah, and Tyka, “Inceptionism: Going Deeper into Neural Networks” (upper right)
+Johnson, Alahi, and Fei-Fei: “Perceptual Losses for Real-Time Style Transfer and Super-Resolution”, ECCV 2016 (bottom left)
+
+
